@@ -1,0 +1,13 @@
+
+
+
+# Data Engineers need to solve 2 problems 
+
+    1. pipeline design 
+        => code work with batch , stremaing data`
+        => with apache beam
+    2. Implementation
+        
+        => cloud Dataflow
+            => ingest, transform, load
+            

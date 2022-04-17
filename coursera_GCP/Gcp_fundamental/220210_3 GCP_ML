@@ -1,0 +1,25 @@
+
+
+# Agenda 
+
+    - how does ML on unstructured data work?
+    - choosing the right ML approach 
+        
+        - Pre-built Ai building blocks 
+        - Using Pre-built Ai to create a chatbot
+        - Customizing Pre-built models with Auto ML 
+        - Budiling a custom model 
+
+
+
+
+# demo: Text classification done three ways:
+
+
+    # Extract 
+    1. BigQuery 
+        => run query 
+    
+    2. build ML model 
+        => run 
+    

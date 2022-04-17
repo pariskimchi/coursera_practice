@@ -1,0 +1,373 @@
+
+
+Predicting Visitor Purchase with 
+a Classification Model with BigQuery ML
+
+Task 1. Explore ecommerce data 
+
+시나리오:
+    데이터 분석팀이 Google Analytics 로그를 추출하고 ,  
+    raw data 테이블을 만들었다 
+
+
+Question: out of the total visitors who visited our website, 
+    what % made a purchase?
+
+1. click the query EDITOR 
+2. Add query 
+
+    #standardSQL
+-- WITH visitors AS(
+-- SELECT
+-- COUNT(DISTINCT fullVisitorId) AS total_visitors
+-- FROM `data-to-insights.ecommerce.web_analytics`
+-- ),
+-- purchasers AS(
+-- SELECT
+-- COUNT(DISTINCT fullVisitorId) AS total_purchasers
+-- FROM `data-to-insights.ecommerce.web_analytics`
+-- WHERE totals.transactions IS NOT NULL
+-- )
+-- SELECT
+--   total_visitors,
+--   total_purchasers,
+--   total_purchasers / total_visitors AS conversion_rate
+-- FROM visitors, purchasers
+
+3. click run 
+
+Question: What are the top 5 selling products?
+
+4. add query 
+
+-- SELECT
+--   p.v2ProductName,
+--   p.v2ProductCategory,
+--   SUM(p.productQuantity) AS units_sold,
+--   ROUND(SUM(p.localProductRevenue/1000000),2) AS revenue
+-- FROM `data-to-insights.ecommerce.web_analytics`,
+-- UNNEST(hits) AS h,
+-- UNNEST(h.product) AS p
+-- GROUP BY 1, 2
+-- ORDER BY revenue DESC
+-- LIMIT 5;
+
+Question: How many visitors bought on subsequent visits 
+    to the website?
+
+# visitors who bought on a return visit (could have bought on first as well
+WITH all_visitor_stats AS (
+SELECT
+  fullvisitorid, # 741,721 unique visitors
+  IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid
+)
+SELECT
+  COUNT(DISTINCT fullvisitorid) AS total_visitors,
+  will_buy_on_return_visit
+FROM all_visitor_stats
+GROUP BY will_buy_on_return_visit
+
+
+Task 2. Select features and create your training dataset
+
+  =>특정 주요 컬럼을 선택해서 훈련 데이터셋 만들기 
+
+  => 훈련데이터셋을 위한 복잡한 쿼리문을 만든다 
+
+
+SELECT
+  * EXCEPT(fullVisitorId)
+FROM
+  # features
+  (SELECT
+    fullVisitorId,
+    IFNULL(totals.bounces, 0) AS bounces,
+    IFNULL(totals.timeOnSite, 0) AS time_on_site
+  FROM
+    `data-to-insights.ecommerce.web_analytics`
+  WHERE
+    totals.newVisits = 1)
+  JOIN
+  (SELECT
+    fullvisitorid,
+    IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM
+      `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid)
+  USING (fullVisitorId)
+ORDER BY time_on_site DESC
+LIMIT 10;
+
+
+Task 3. Create a Bigquery dataset to store model 
+
+  => 빅쿼리 데이터 셋을 만든다 모델을 놓기 위해서 
+
+  => 빉 쿼리 데이터셋을 ecommerce 데이터셋을 만들어준다
+
+Task 4. Select a BigQuery ML model type and specify Options
+
+  # MOdel = forecasting 
+    model_type = linear_reg,
+    label_data_type = numeric_value 
+  
+  # model = classification 
+    model_type = logistic_reg, 
+    label_data_type = 0 or 1 for binary classification
+
+
+CREATE OR REPLACE MODEL `ecommerce.classification_model`
+OPTIONS
+(
+model_type='logistic_reg',
+labels = ['will_buy_on_return_visit']
+)
+AS
+#standardSQL
+SELECT
+  * EXCEPT(fullVisitorId)
+FROM
+  # features
+  (SELECT
+    fullVisitorId,
+    IFNULL(totals.bounces, 0) AS bounces,
+    IFNULL(totals.timeOnSite, 0) AS time_on_site
+  FROM
+    `data-to-insights.ecommerce.web_analytics`
+  WHERE
+    totals.newVisits = 1
+    AND date BETWEEN '20160801' AND '20170430') # train on first 9 months
+  JOIN
+  (SELECT
+    fullvisitorid,
+    IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM
+      `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid)
+  USING (fullVisitorId)
+;
+
+
+
+Task 5. Evaluate classification model performance 
+
+  => 모델평가를 위해서 
+  => False Positive Rate 를 줄이기 위한게 주요 목적으로 할건지 
+  => True Positive Rate를 높이는걸 목적으로 할건지 
+
+  일단 상황별로 시나리오별로 모델평가를 한다 
+
+  혹은 ROC 점수 비교로 가던가 
+  
+  빅쿼리에서는 주로 Roc_auc로 주로 모델 평가 한다 
+
+
+SELECT
+  roc_auc,
+  CASE
+    WHEN roc_auc > .9 THEN 'good'
+    WHEN roc_auc > .8 THEN 'fair'
+    WHEN roc_auc > .7 THEN 'not great'
+  ELSE 'poor' END AS model_quality
+FROM
+  ML.EVALUATE(MODEL ecommerce.classification_model,  (
+SELECT
+  * EXCEPT(fullVisitorId)
+FROM
+  # features
+  (SELECT
+    fullVisitorId,
+    IFNULL(totals.bounces, 0) AS bounces,
+    IFNULL(totals.timeOnSite, 0) AS time_on_site
+  FROM
+    `data-to-insights.ecommerce.web_analytics`
+  WHERE
+    totals.newVisits = 1
+    AND date BETWEEN '20170501' AND '20170630') # eval on 2 months
+  JOIN
+  (SELECT
+    fullvisitorid,
+    IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM
+      `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid)
+  USING (fullVisitorId)
+));
+
+
+Task 6. Improve model performance with feature engineering
+
+  모델 성능을 향상시키기 위해 뭐든 한다 feature_enginerring
+
+    => 새로운 특징 추출을 위해서 
+      classification_model_2 를 만든다 
+
+CREATE OR REPLACE MODEL `ecommerce.classification_model_2`
+OPTIONS
+  (model_type='logistic_reg', labels = ['will_buy_on_return_visit']) AS
+WITH all_visitor_stats AS (
+SELECT
+  fullvisitorid,
+  IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid
+)
+# add in new features
+SELECT * EXCEPT(unique_session_id) FROM (
+  SELECT
+      CONCAT(fullvisitorid, CAST(visitId AS STRING)) AS unique_session_id,
+      # labels
+      will_buy_on_return_visit,
+      MAX(CAST(h.eCommerceAction.action_type AS INT64)) AS latest_ecommerce_progress,
+      # behavior on the site
+      IFNULL(totals.bounces, 0) AS bounces,
+      IFNULL(totals.timeOnSite, 0) AS time_on_site,
+      totals.pageviews,
+      # where the visitor came from
+      trafficSource.source,
+      trafficSource.medium,
+      channelGrouping,
+      # mobile or desktop
+      device.deviceCategory,
+      # geographic
+      IFNULL(geoNetwork.country, "") AS country
+  FROM `data-to-insights.ecommerce.web_analytics`,
+     UNNEST(hits) AS h
+    JOIN all_visitor_stats USING(fullvisitorid)
+  WHERE 1=1
+    # only predict for new visits
+    AND totals.newVisits = 1
+    AND date BETWEEN '20160801' AND '20170430' # train 9 months
+  GROUP BY
+  unique_session_id,
+  will_buy_on_return_visit,
+  bounces,
+  time_on_site,
+  totals.pageviews,
+  trafficSource.source,
+  trafficSource.medium,
+  channelGrouping,
+  device.deviceCategory,
+  country
+);
+
+  2. 그리고 새로운 classification_model_2 모델 성능 평가 해본다 
+
+  #standardSQL
+SELECT
+  roc_auc,
+  CASE
+    WHEN roc_auc > .9 THEN 'good'
+    WHEN roc_auc > .8 THEN 'fair'
+    WHEN roc_auc > .7 THEN 'not great'
+  ELSE 'poor' END AS model_quality
+FROM
+  ML.EVALUATE(MODEL ecommerce.classification_model_2,  (
+WITH all_visitor_stats AS (
+SELECT
+  fullvisitorid,
+  IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid
+)
+# add in new features
+SELECT * EXCEPT(unique_session_id) FROM (
+  SELECT
+      CONCAT(fullvisitorid, CAST(visitId AS STRING)) AS unique_session_id,
+      # labels
+      will_buy_on_return_visit,
+      MAX(CAST(h.eCommerceAction.action_type AS INT64)) AS latest_ecommerce_progress,
+      # behavior on the site
+      IFNULL(totals.bounces, 0) AS bounces,
+      IFNULL(totals.timeOnSite, 0) AS time_on_site,
+      totals.pageviews,
+      # where the visitor came from
+      trafficSource.source,
+      trafficSource.medium,
+      channelGrouping,
+      # mobile or desktop
+      device.deviceCategory,
+      # geographic
+      IFNULL(geoNetwork.country, "") AS country
+  FROM `data-to-insights.ecommerce.web_analytics`,
+     UNNEST(hits) AS h
+    JOIN all_visitor_stats USING(fullvisitorid)
+  WHERE 1=1
+    # only predict for new visits
+    AND totals.newVisits = 1
+    AND date BETWEEN '20170501' AND '20170630' # eval 2 months
+  GROUP BY
+  unique_session_id,
+  will_buy_on_return_visit,
+  bounces,
+  time_on_site,
+  totals.pageviews,
+  trafficSource.source,
+  trafficSource.medium,
+  channelGrouping,
+  device.deviceCategory,
+  country
+)
+));
+
+
+Task 7. Predict which new visitor will comeback and purchase 
+
+
+  => 새로운 방문자가 재방문 할건지 , 구매할건지 예측 
+
+  SELECT
+*
+FROM
+  ml.PREDICT(MODEL `ecommerce.classification_model_2`,
+   (
+WITH all_visitor_stats AS (
+SELECT
+  fullvisitorid,
+  IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid
+)
+  SELECT
+      CONCAT(fullvisitorid, '-',CAST(visitId AS STRING)) AS unique_session_id,
+      # labels
+      will_buy_on_return_visit,
+      MAX(CAST(h.eCommerceAction.action_type AS INT64)) AS latest_ecommerce_progress,
+      # behavior on the site
+      IFNULL(totals.bounces, 0) AS bounces,
+      IFNULL(totals.timeOnSite, 0) AS time_on_site,
+      totals.pageviews,
+      # where the visitor came from
+      trafficSource.source,
+      trafficSource.medium,
+      channelGrouping,
+      # mobile or desktop
+      device.deviceCategory,
+      # geographic
+      IFNULL(geoNetwork.country, "") AS country
+  FROM `data-to-insights.ecommerce.web_analytics`,
+     UNNEST(hits) AS h
+    JOIN all_visitor_stats USING(fullvisitorid)
+  WHERE
+    # only predict for new visits
+    totals.newVisits = 1
+    AND date BETWEEN '20170701' AND '20170801' # test 1 month
+  GROUP BY
+  unique_session_id,
+  will_buy_on_return_visit,
+  bounces,
+  time_on_site,
+  totals.pageviews,
+  trafficSource.source,
+  trafficSource.medium,
+  channelGrouping,
+  device.deviceCategory,
+  country
+)
+)
+ORDER BY
+  predicted_will_buy_on_return_visit DESC;
+
+  

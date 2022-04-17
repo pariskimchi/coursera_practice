@@ -1,0 +1,41 @@
+
+
+
+Serverless data pipelines 
+
+    - Designing streaming pipelines with Apache beam 
+    - Implementing streaming pipelines on Cloud dataflow 
+
+Data visualization with Data Studio 
+    - Building collaborative dashboards 
+
+
+
+# Modern big data pipelines face many challenges 
+
+    - Variety 
+    
+    - Volume 
+    - Velocity 
+
+# Message-oriented architectures with Pub/Sub 
+
+    => Data streaming from various process or devices 
+    
+    => Dsitributing event notifications 
+
+    => Scale to handle volume 
+    
+    => Reliable
+
+    # Pub/sub 
+        => offers reliable, real-time messaging 
+
+        
+1. Ingest 
+2. Store (cloud pub/sub)
+3. Process (Cloud Dataflow)
+4. Store & analyze (cloud bigquery/cloud storage)
+5. Explore & visualize 
+
+

@@ -1,0 +1,137 @@
+
+
+# Building a Data Warehouse 
+
+
+# Modern Data Warehouse?
+
+    => should be available to querying
+    => gigabyte to petabyte
+    => Ecosystem of visualization 
+    => ecosystem of ETL and processing tools 
+    => up to the minute data 
+    => machine learning 
+    => security and collaboration
+
+# Bigquery?
+
+    
+    Relational databases
+        OLTP 
+        => need frequent update 
+        => need row-oriented table 
+            => index or row-key
+
+    # bigquery 
+        => column-oriented
+
+# querying TB of data in seconds 
+
+
+# get started with BigQuery 
+
+    {project.dataset.table}
+
+
+
+# Load data into Bigquery 
+
+    # method
+    
+    1.EL 
+        => just load 
+        
+        1. Batch load support different file format 
+            => csv, parquet, avro , json
+            => load job 은 그냥 없는 테이블이라도 
+            그냥 job 설정이 된다 
+
+        # Load data through Cloud storage 
+            => 로컬 파일 복사 => 버킷에 
+            => cloud storage 에서 => bigquery로 복사
+            => 이제 빅쿼리(data warehouse)로 파일 로드 하면
+
+            > gsutil -m cp *.csv gs://mybucket 
+            > bq load ... 
+
+        # Automate the execution 
+            => 스케줄링 하기 
+            => Scheduled query
+            SQL 쿼리 이용해서 
+            interval 24시간이면 
+            자동적으로 매일 작동하는 쿼리문
+            ex) CREATE OR REPLACE TABLE ch...
+                SELECT from ...
+                FOR SYSTEM_TIME AS of
+                TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+
+            아니면 CLI 이용해서 스케줄 설정 가능 
+            NOW=$(date +%s)
+            SNAPSHOT = $(echo "($NOW - 120)*1000" | bc)
+            bq --location=EU cp\
+            ch10eu.restored_cycle_stations@$SNAPSHOT\
+            ch10eu.restored_table
+
+        # Transformation 
+        => 데이터셋을 스케일링같은거 하려면 
+        이제 빅쿼리 안에서 transform 한다
+        => 일단은 bigquery 안에서 원본 데이터셋을 놓고 나서 
+        이제 빅쿼리 안에서 변형한다 
+
+            # types 
+                1.insert 
+                2. update 
+                3. delete 
+                4. merge 
+                => SQL문을 통해서 변경
+                => 테이블 생성 삭제도 빅쿼리 안에서 한다 
+                    => 즉 데이터웨어하우스 빅쿼리는 스키마만 할당받는걸로 해야되나??
+
+
+# Schema design 
+
+    # types 
+    1. normalized data 
+    2. denormalized flattened data 
+
+# Nested and repeated fields 
+
+여러 테이블을 => 한 커다란 빅 테이블로 만들까??
+
+    1.여러테이블을 합치려면 비용이 든다 
+    2. 한번에 커다란 빅테이블을 만들면 
+        데이터가 많이 겹친다 
+
+    # Solution 
+        => data is nested and repeated
+
+
+
+# Demo: Nested and repeated fields 
+
+    => 반복되는 컬럼 확인 
+    => 10GB 기준으로  
+        테이블 설정 
+        10gb 미만이면 보통 join 을 통해서 이용 
+
+
+# Optimize with partitioning and clustering 
+
+
+    # way of partitioning tables 
+
+        1. Ingestion time 
+        => bq query --destination_table mydataset.mytable
+        --time_partitioning_type=DAY
+
+        2. any column that is of type DATEtime, DATe or TIMESTAMP
+
+        => bq mk --table --schema a:STRING, tm:TIMESTAMP
+        --time_partitioning_field tm
+
+        3. Integer-typed column 
+        => bq mk --table --schema "customer_id:integer,value:integer"
+        --range_partitioning=customer_id, 0, 100, 10
+        my_dataset.my_table
+
+

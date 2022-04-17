@@ -1,0 +1,72 @@
+
+
+Task 1. Set up AutoML Vision
+
+
+in cloud shell
+
+gsutil mb -p $DEVSHELL_PROJECT_ID \
+    -c regional    \
+    -l us-central1 \
+    gs://$DEVSHELL_PROJECT_ID-vcm/
+
+
+Task 2. Upload training images to Cloud storage
+
+
+Mennu > Cloud Storage 
+
+gsutil -m cp -r gs://cloud-training/automl-lab-clouds/* gs://$DEVSHELL_PROJECT_ID-vcm/
+
+gsutil ls gs://$DEVSHELL_PROJECT_ID-vcm/
+
+Task 3. Create an AutoMl Vision training dataset 
+
+
+    1. Copy the template file to Cloud shell instance 
+
+    2. Update the csv with the file in project 
+
+    3. upload this updated csv file to Cloud Storage bucket 
+
+    4. Show the bucket to confirm data.csv file 
+
+gsutil cp gs://cloud-training/automl-lab-clouds/data.csv .
+head --lines=10 data.csv
+sed -i -e "s/placeholder/$DEVSHELL_PROJECT_ID-vcm/g" ./data.csv
+head --lines=10 data.csv
+gsutil cp ./data.csv gs://$DEVSHELL_PROJECT_ID-vcm/
+gsutil ls gs://$DEVSHELL_PROJECT_ID-vcm/
+
+
+- view all folders and files in bucket 
+gsutil ls gs://$DEVSHELL_PROJECT_ID-vcm/*
+
+
+저장
+gs://qwiklabs-gcp-your-project-id-will-be-here-vcm/data.cs
+
+
+
+Task 4. Inspect the images 
+
+
+Task 5. Train your model 
+
+    => on Train tab 
+    => click Start Training
+
+    => Click continue 
+
+    Train new model 
+
+    => model name 
+        cloud hosted 
+
+    set node : 8 
+
+
+Task 6. Evaluate the model 
+
+    => Evaluate tab 
+    

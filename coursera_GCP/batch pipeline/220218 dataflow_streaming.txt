@@ -1,0 +1,77 @@
+
+
+# Streaming data challenge 
+
+
+    # processing streaming data 
+
+        1. Scalability 
+        => 스트리밍 데이터는 
+        점점 커지고 빈도수가 잦아진다 
+
+        2. Fault tolerance
+        => 오류를 견뎌야됨 
+        볼륨이 커지더라도 바로 오류 디버깅 불가
+
+        3. Model 
+        => streaming or batch?
+
+
+    # message ordering 
+
+        # pub/sub publisher code 
+
+        msg.publish(event_data, mytime="")
+
+        # Dataflow pipeline code 
+
+        p.apply(
+            PubsubIO.readStrings()
+        ).fromTopic(t).withTimestampAttribute("mytime")
+
+    # modify date-timestamp (DTS)
+
+    unix_timestamp = extract_timestamp_from_log_entry(element)
+
+# Setting time windows 
+
+    # Fixed-time windows 
+    from apache_beam import window 
+    fixed_windowed_items = (
+        items | 'window' >> beam.WindowInto(window.FixedWindows(60))
+    )
+
+    # Sliding time windows 
+    from apache_beam import window 
+    sliding_windowed_items = (
+        items | 'window' >> beam.WindowInto(window.SlidingWindows(30,5))
+    )
+
+    # Session windows 
+    session_windowed_items = (
+        items | 'window' >> beam.WindowInto(window.Sessions(10*60))
+    )
+
+# pipeline 
+
+    => 항상 딜레이가 있으므로 
+    
+    각각 데이터 1이 실행될떄마다 
+    각각으로 시시각각 다른 세션에서 실행된다 
+
+    # watermark 를 이용해서 
+    각각 언제부터 시작해서 언제끝나는지 마킹용으로 사용
+    lag time 이 있으므로 
+    원래 이 해당 데이터가 전달되었어야 되는데 
+    그렇지 않았으므로, 딜레이 된 값까지 확인하고 이해할수 있게끔 
+    4초 렉 걸려서 늦었으면, 4초 늦게 실행된다 
+    예를 들면 1분간 영상이 나와야 되는ㄴ데 
+    클릭후에 4초 딜레이 걸려서 영상 실행 
+    => 근데 4초 딜레이 걸렸으므로 영상 시작또한 
+    4초 딜레이 후부터 영상이 실행되고 , 엔딩 시간도 4초 더하고 
+
+    
+    # afterWatermark 
+        => event time trigger 
+        => 이벤트 발생하면 run 
+        

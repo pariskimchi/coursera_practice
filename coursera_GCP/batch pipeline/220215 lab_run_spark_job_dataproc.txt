@@ -1,0 +1,199 @@
+
+
+
+
+# Part 1. Lift and Shift 
+=> migrate existing spark job 
+    to Cloud dataproc 
+=> 원래 있는 스파크 잡(jupyter notebook)을 
+    dataproc 에 보낸다 
+
+    # 1. configure and start cloud dataproc cluster 
+    1. menu> Big Data > Dataproc 
+    2. create cluster 
+    3. enter `sparktodp` for cluster Name 
+    4. Versioning
+        click change, select 2.0(
+            Debian 10, Hadoop 3.2, Spark 3.1
+        )
+    5. select 
+    6. Components> Component gateway 
+        => select Enable component gateway 
+    7. Optional components, 
+        => select jupyter Notebook 
+    8. create 
+
+    # 2. Clone the source repo for the lab
+    => 깃에서 복붙 
+    
+    1. clone in cloud shell :
+    git -C ~ clone https://github.com/GoogleCloud/Platform/
+    training-data-analyst
+
+    2. TO locate the default cloud storage bucket 
+    by cloud dataproc in cloud shell 
+    export DP_STORAGE ="gs://$(gcloud dataproc cluster describe
+        sparktodp --region=us-central1 
+        --format=json | jq -r '.config.configBucket'
+    ) "
+
+    3. To copy
+    gsutil -m cp ~/training-data-analyst/quests/sparktobq/*.ipynb
+    $DP_STORAGE/notebooks/jupyter
+
+    # 3. log in to jupyter notebook 
+    => jupyter 노트북으로 로그인하기 
+    => 어케함?
+
+    1. cluster deails page 
+    2. > web interface 
+    3. > click jupyter link to open new jupyter tab 
+        => /notebooks/jupyter directory 
+        in cloud storage 
+    4. under Files tab, click GCS folder 
+        => click 01_spark.ipynb 
+    5. Cell and Run All
+    6. 뒤로가기 
+
+    7. copy kdd ML file 
+   !wget https://archive.ics.uci.edu/ml/machine-learning-databases/kddcup99-mld/kddcup.data_10_percent.gz
+    8. source data is copied to local hadoop system 
+    => !hadoop fs -put kddcup* /
+    9. content of default directory in the cluster 
+    HDFS file system 
+    !hadoop fs -ls /
+
+    # Reading in data 
+    => 스파크 코드 이용해서 데이터 로드 
+    => 스파크 코드로 sql 쿼리문 이용해서 
+    데이터 분석 및 시각화 
+
+# Part 2: Separate Compute and Storage 
+=> 컴퓨트랑 저장소 분리 
+
+    # modify spark jobs to use cloud storage 
+    instead of HDFS
+    1. In cloud shell, 
+        => create a new storage bucket 
+        export PROJECT_ID=$(gcloud info --format='value(config.project)')
+        gsutil mb gs://$PROJECT_ID
+
+    2. copy source data into the bucket 
+    wget https://archive.ics.uci.edu/ml/machine-learning-databases/kddcup99-mld/kddcup.data_10_percent.gz
+    gsutil cp kddcup.data_10_percent.gz gs://$PROJECT_ID/
+
+    3. switch back to the 01_spark jupyter notebook tab 
+    4. > File > Make a Copy
+    5. When the copy opens, 
+        click 01_spark_Copy1 > rename De-Couple-storage
+    6. open 01_spark
+    7. > File > Save and checkpoint 
+    8. > File > close and Halt
+    9. back to De-couple-Storage jupyter notebook
+    10. 스파크 코드 실행 
+        => 세션 빌더=> rdd 생성 
+
+# Part 3. Deploy Spark Jobs 
+    => 스파크 잡 실행 
+
+    # Optimize Spark jobs to run on job specific cluster 
+    => 스파크 잡 실행하는 코드파일은 만들어졌으니 
+    => 그 코드파일을 자동적으로 실행하게끔 하는 파일을 만들어준다 
+
+    1. In the De-couple-storage , 
+        > File > Make a copy 
+    2. click De-couple-storage-Copy1
+        rename PySpark-analysis-file
+    3. open De-couple-storage 
+    4. > file > Save and checkpoint 
+    5. File > close and Halt 
+    6. switch back to 
+        PySpark-analysis-file 
+    7. 
+    8. insert and insert cell above 
+    9. 파이썬 코드 
+
+        # initialization
+        %%writefile spark_analysis.py
+        import matplotlib
+        matplotlib.use('agg')
+        import argparse
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--bucket", help="bucket for input and output")
+        args = parser.parse_args()
+        BUCKET = args.bucket
+
+    10. analyse python file 만들기 
+        
+        %%writefile -a spark_analysis.py
+        from pyspark.sql import SparkSession, SQLContext, Row
+        spark = SparkSession.builder
+                .appName("kdd").getOrCreate()
+        sc = spark.sparkContext
+        data_file = "gs://{}/kddcup.data_10_percent.gz".format(BUCKET)
+        raw_rdd = sc.textfile(data_file).cache()
+        #raw_rdd.take(5)
+    11. insert and insert cell below 
+    14.  run 
+        %%wrtiefile -a spark_analysis.py
+        ax[0].get_figure().savefig('report.png');
+
+    15. run 
+        %%writefile -a spark_analysis.py 
+        import google.cloud.storage as gcs 
+        bucket = gcs.Client().get_bucket(BUCKET)
+        for blob in bucket.list_blobs(prefix='sparktodp/'):
+            blob.delete()
+        bucket.blob('sparktodp/report.png').
+        .upload_from_filename('report.png')
+    16. add 
+        %%writefile -a spark_analysis.py 
+        connections_by_protocol.write.format("csv")
+        .mode("overwrite").save(
+            "gs://{}/sparktodp/connections_by_protocol".format(BUCKET)
+        )
+
+    # TEST Automation 
+
+    1. In the PySpark-analysis-file notebook 
+    => run 
+
+        BUCKEt_list = !gcloud info --format='value(config.project)'
+        BUCKET=BUCKET_list[0]
+        print('Writing to {}'.format(BUCKET))
+        !/opt/conda/miniconda3/bin/python spark_analysis.py
+        --bucket=$BUCKET
+
+        ====> gcloud 버킷 설정및 연결 
+    2. cloud storage 버킷 안에 뭐있는지 확인 
+        
+        !gsutil ls gs://$BUCKET/sparktodp/**
+    3. copy 한다 
+        !gsutil cp spark_analysis.py gs://$BUCKET/sparktodp/spark_analysis.py
+
+    4. run  to all 
+
+    5. 그럼 자동적으로 돌아갈것 
+
+    # Run the Analysis job from cloud shell 
+    =====> 쉘에서 분석 작업이 자동적으로 돌아갈것 
+        gsutil cp gs://$PROJECT_ID/sparktodp/spark_analysis.py spark_analysis.py 
+
+    2. create a launch script 
+        nano submit_onejob.sh 
+    3. dataproc job 실행 
+        gcloud dataproc jobs submit pyspark\
+            --cluster sparktodp \
+            --region us-central1 \
+            spark_analysis.py   \
+            -- --bucket=$1
+    4. 컨트롤+x and Y and enter => exit and save
+    5. make the script executable 
+        chmod +x submit_onejob.sh 
+    
+    6. Launch the pyspark analysis job 
+        ./submit_onejob.sh $PROJECT_ID
+
+    7. > Dataproc > cluster 
+    8.  > Jobs 
+    9

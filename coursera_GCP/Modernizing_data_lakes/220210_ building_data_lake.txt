@@ -1,0 +1,92 @@
+
+
+# Introduction to data lake?
+ 
+
+# Components of DE system 
+
+    - Data sources 
+    - data sink 
+        -central data lake (Cloud Storage)
+        - data warehouse (BigQuery)
+
+    - data pipelines(batch and stream)
+
+    - high-level orchestration workflow(Airflow)
+
+
+# Data lake 
+    - all data in native format 
+    - support all data types and all user 
+    - Adapt to change easily 
+
+# data warehouse 
+    - typically loaded after use case is defined 
+    - processed/organized/transformed 
+    - provide faster insights 
+    - current/historical data for reporing 
+    - consistend schema shared
+
+
+# Data Storage and ETL pipeline 
+
+
+    # the path 
+        1. data now where?
+        2. data how big?
+        3. data go where?
+        4. data need how much transformation?
+
+    
+# The method when how much transformation needed 
+
+    1. EL 
+        Extract and LOad 
+    2. ELT
+        Extract, load, and Transform
+    3. ETL
+        Extract, Transform and Load`
+
+# Build a data lake using Cloud Storage 
+    
+    # Cloud Storage work how?
+
+    => location to control latency
+
+    # Cloud Storage simulates 
+        => a file system
+        in bucket, / shell
+
+# Security Cloud Storage 
+
+    # Controlling Access with IAM and access lists 
+
+        => Set policy 
+    
+    # Data encryption options 
+         Cloud KMS
+            => management encrption key 
+        
+    
+    # cloud storage lock
+        => Data locking for audits log
+            => prevent modify the data
+
+
+# different transactional workloads 
+
+    # Transactional workload 
+        => require fast insert, updates    
+        => Cloud SQL, Cloud Spanner
+
+    # Analytical workload 
+        => Cloud Bigquery
+
+# Cloud SQL as relational Data Lake
+
+    - Dataproc 
+        => Manage Spark and Hadoop
+    - Dataflow
+        => parallel data processing 
+    - BigQuery
+        => Analytic engine

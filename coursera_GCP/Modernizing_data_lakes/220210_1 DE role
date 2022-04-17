@@ -1,0 +1,73 @@
+
+
+The role of Data Engineer?
+
+
+
+# Data Lake?
+
+    => brings together data 
+    from various sources into single location
+
+    => single location to store the raw data 
+        in cloud storage bucket
+
+    => 데이터레이크란?
+        => 여러곳에 산재해있는 로우 데이터들을 
+        한곳에 모으는것 
+        => cloud storage bucket에 데이터를 한곳에 모아넣는곳
+
+
+# ETL 
+    
+    # Data processing 
+
+    => Cloud Dataproc,
+    
+    => Cloud Dataflow 
+
+        => ETL pipeline 에서 
+            Extract 는 데이터 레이크 만들고 
+            데이터 웨어하우스 만드는 과정 
+        => Transform 에서 
+        data processing 
+            => cloud dataproc, cloud dataflow 
+
+    # Streaming data processing 
+
+    => pub/sub 
+    => dataflow 
+    => bigQuery 
+
+# Data Engineer challenge 
+
+
+    1. Access to data 
+    
+        # Getting insights from multiple data set 
+        # without a data lake => difficult
+        
+        => 데이터가 여러곳에 산재해 있기 떄문에 
+        데이터 바로 보고 파악하기가 힘들다 
+        => 그러므로 데이터 한곳에 모아둬서 파악하기 
+        용이하게 하기 위해서 
+        => data lake 필요성 ETL 파이프라인 필요 
+
+    2. Data accuracy and quality 
+
+        => ETL pipeline으로 data warehouse에 보낸다 
+        => 데이터 정리를 해야한다 
+            => ex missing data 
+            => 정리된 데이터를 data warehouse에 store 한다
+
+    3. Availability of computational resources 
+
+        => 빅데이터 효율적 관리를 위해서 
+        리소스 관리 해야된다 
+        서버 비용 돈 관리 
+
+    4. query performance 
+
+        => choosing a query engine 
+        => patching and updating query engine 
+        => managing cluster 

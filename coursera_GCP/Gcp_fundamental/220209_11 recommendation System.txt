@@ -1,0 +1,78 @@
+
+
+# Recommendation systems 
+
+    - Business applications 
+    - scenario: ML for housing rentals 
+
+# Choosing the right solution approach 
+
+    - on-premise to GCP
+    - Chllange" Utilizing and tuning on-premise cluster 
+    - off-cluster storage with GS
+
+
+# 추천 모델 시스템에서 
+
+    1. stream 
+        => 실시간으로 분석=> 러닝=> 예측
+    2. Batch 
+        => 하루에 한번만 
+        => hadoop => cloud SQL 
+
+
+Approach : Move from on-premise to Google Cloud
+
+
+    => 로컬에서 spark , hadoop, 로컬 환경 
+    
+    => GCP 이용하면 모델은 그대로 spark 
+        인프라도 그대로 hadoop 
+        하지만 저장장소는 dataproc, cloud SQL 에 저장
+
+
+DEmo: run spark job 
+
+    1. Menu=> data proc 
+        
+        1. create a cluster 
+
+        2. submit a job 
+            => 뭐할건지 작업 설정 
+            => 여기다가 스파크 코드 설정 
+
+
+Challenge: Utilizaing and tuning on-premise cluster 
+
+    => 만약에 4가지 job 작업을 돌리다가 
+    1번째 , 2번쨰에서 클러스터 리소스를 각각 50퍼센트씩 
+    사용해버리면 
+    3번째 4번째에서는 사용이 불가하다 
+
+    => 그래서 각각 작업에서 공통적으로 사용되는 데이터나 작업에 한해 
+    공통 클러스터 설정 해준다 
+    => 아니면 사용 안할 클러스터를 종료해줌으로써 
+    리소스 관리를 한다. 이렇게 클러스터 사용종료 할때 
+    스케줄 설정으로 관리함
+    => 클러스터 사이즈 관리함으로써 리소스 할당 관리 
+
+    => 여기서 Cloud Dataproc 의 중요성을 숙지하자 
+
+Move Storage off-cluster with GCS
+
+    input 데이터랑 
+    output 데이터는 
+    off-cluster 이므로 
+
+    실질적으로 작동하고 있는 storage를 이용하는게
+    효율적
+
+    1. Cloud storage (HDFS)
+    2. clooud bigtable(HBase)
+    3. cloud bigquery
+
+Dataproc
+    => Hadoop without cluster management 
+    => Lift-and-shift existing Hadoop workloads 
+    => connect with Cloud storage to separate compute and storage 
+    => re-size cluster 

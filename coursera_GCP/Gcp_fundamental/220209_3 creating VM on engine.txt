@@ -1,0 +1,31 @@
+
+
+
+구글 클라우드에서 
+compute Engine 에서 가상환경 만드는것 
+
+
+
+1. Menu => Compute Engine
+    1. create VM instance
+    => select disk 
+
+    => 쉽게 만들수 있다 
+
+
+
+2. Menu => storage
+    => 샘플데이터를 놓기 위해서 
+    storage 섹션에서 사용하기 위한 데이터를 놓을 
+    장소인 bucket 을 만들어준다
+
+    => create a bucket 
+    
+    # gcloud shell 
+
+    gsutil ls gs://{project_name}
+
+    => 기본적으로 구글 클라우드 쉘 명령어로 움직이지만 
+    프로젝트네임 기준으로 많은게 설정되기때문에 
+    어느정도 쉽다 
+    

@@ -1,0 +1,82 @@
+
+
+Modern data pipeline challenges 
+
+Serverless data pipelines 
+    - Desinging streaming pipelines with 
+        apache Beam 
+    - Implementing streaming pipelines on
+        cloud dataflow
+
+Data Visualization with data studio 
+    - budiling collaborative dashboards 
+    - tips an
+
+
+Iot devices data  => to data ingestion
+
+    - Data streaming from various processes or devices 
+    - Distributing event notifications 
+    - scale to handle volume 
+    - reliable(no duplicate)
+
+Pub/sub offers reliable, real-time messaging
+
+    - At-least-once delivery 
+    - no provisioning, auto-everything
+    - open API's
+    - global by default
+    - end to end
+
+
+Google cloud serverless big data pipeline
+
+Ingest => Store => Process => Store & Analyze => Explore & Visualize
+
+    Pub/sub HR Topic
+
+Scenario: HR messaging System
+
+
+    pub/sub HR topic 
+
+Data Engineers need to solve 2 problems 
+
+    => 1. Pipeline design 
+        - will my code work with both 
+            batch and streaming data?
+        - does the sdk supprot the transformations 
+             i need to do?
+        - are there existing solutions?
+        => use Apache Beam 
+
+    => 2. Implementation
+
+Apache Beam 
+
+Dataflow offers NoOps data pipelines 
+
+input => read => filter 1 => group 1 => filter 2
+    => transform 1 => write => output 
+
+
+
+2. Implementation 
+
+    - how much maintenance overhead is involved?
+    - is the infrastructure reliable?
+    - how is scaling handled?
+    - how can i monitor and alert?
+
+    => use google cloud dataflow
+
+workflow with Dataflow
+
+submit job => excute job => compute and storage 
+    => read inputs => produce result
+
+
+Visualizing insights with Data studio 
+
+    - building dashboards
+    - create chart to visualize data relationships

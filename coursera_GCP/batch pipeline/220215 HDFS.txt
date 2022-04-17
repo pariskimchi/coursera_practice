@@ -1,0 +1,216 @@
+
+# Hadoop ecosystem?
+=> need to analyze large datasets 
+=> 분산처리 시스템 
+
+
+
+# running Hadoop on Dataproc
+
+    # Dataproc?
+        => managed service for running 
+        hadoop and spark data processing workload
+
+    # initialization action 
+    to add other software to cluster 
+
+    => gcloud dataproc clusters create <CLUSTER_NAME>
+    --initialization-actions gs://$MY_BUCKET/hbase/hbase.sh
+    --num-masters 3 --num-workers 2
+
+
+    # Using Dataproc 
+
+    #step 
+        1. Setup =>configure => opimitze=> utilize
+        => Monitor
+
+        1. setup 
+            => create a cluster 
+                - console 
+                - gcloud command / yaml file
+                - terraform configuration 
+                - cloud SDK REST API
+        2. configure 
+            - cluster options 
+            - node option s 
+            - worker nodes 
+            - preemtible nodes 
+        3. optimize 
+            - technical status 
+
+        4. utilize 
+            => submit a job 
+                - console 
+                - gcloud command 
+                - REST API
+                - Orchestration service 
+                    - Dataproc workflow templates 
+                    - cloud composer
+
+        5. monitor 
+
+            1. job driver output 
+                => gather job status 
+            2. logs 
+                =>
+            3. cloud monitoring 
+                - hdfs 
+                -yarn 
+                - job metrics 
+                -operational metrics 
+            4. cluster detail graphs 
+                - cpu utilizatino 
+                - disk 
+                - network
+
+# cloud storage instead of HDFS
+
+    # Processing 
+    => start cluster 
+    => run job 
+    => delete cluster
+        1. dataflow 
+        2. bigquery analytics 
+        3. dataproc 
+    
+    # storage 
+    => keep data in place on Cloud storage 
+        1. cloud storage (files)
+        2. bigquery storage(tables)
+        3. cloud bigtable(noSQL)
+
+# Separtion of compute and storage 
+    => enable better options 
+
+
+    1. Database 
+        => bring the data to the processor 
+
+    2. Hadoop 
+        => distribute processing 
+        => stor the data with processor 
+    3. cloud services 
+        => petabit bisectional bandwidth network 
+        => separate, specialize, and connect 
+        => data storage services 
+        => data processing services 
+        => messaging services
+
+# directory rename in HDFS
+    => cloud storage has no conecpt of directories 
+
+    => mv gs://foo/bar/ gs://foo/bar2
+
+        - list 
+        - copy 
+        - delete 
+
+# optimizing Dataproc
+
+    1. where data? where cluster?
+        => select zone, region
+    
+    2. network traffic being funneled?
+
+    3. how many input files?
+        how many hadoop partitions?
+
+    4. size of disk??
+
+    5. enough allocate VM?
+
+# Optimizing Dataproc Storage 
+
+    # Local HDFS
+    - job requires a lot of metadata operations 
+
+    # dataproc + cloud storage 
+        => reduce cost by using this 
+            instead of HDFS
+    
+    # local HDFS? => resizing options?
+
+        => decrease total size of local HDFS 
+            by decreasing the size of disk 
+            workers 
+        => increase total sieze 
+            by increase disk for workers 
+        
+        => reduce latency 
+        => use ssd 
+
+
+# geographical regions- effiency 
+
+    => request latency 
+    => data proliferation 
+    => performance
+
+# split clusters and job 
+
+    => seperate jobs => seperate clusters
+
+
+# Optimizing Dataproc Templates and Autoscaling 
+
+    # Dataproc Workflow Template 
+
+    YAML => DAG(parameters)
+    => 1. create cluster 
+    => 2. select existing cluster by label 
+    => 3. submit jobs 
+    =>> 4. wait on dependencies 
+    => 5. delete a cluster
+
+    # syntax 
+
+    # pip-installed on the cluster 
+    STARTUP_SCRIPT=gs://${BUCKET}/sparktobq/startup_script.sh
+    echo "pip install --upgrade --quiet\
+    google-compute-engine google-cloud-storage matplotlib"
+    > /tmp/startup_script.sh
+    gsutil cp /tmp/startup_script.sh $STARTUP_SCRIPT
+
+    # create new cluster for job
+    gcloud dataproc workflow-templates set-managed-cluster $TEMPLATE\
+        --master-machine-type $MACHINE_TYPE\
+        --worker-machine-type $MACHINE_TYPE\
+        --initialization-actions $STARTUP_SCRIPT\
+        --num-workers 2 \
+        --image-version 1.4\
+        --cluster-name $CLUSTER
+
+    # steps in job 
+    gcloud dataproc workflow-templates add-job \
+        pyspark gs://$BUCKET/spark_analysis.py \
+        --step-id create-report \
+        --workflow-template $TEMPLATE\
+        --bucket=$BUCKET
+
+    # submit workflow template 
+    gcloud dataproc workflow-template instantiate $TEMPLATE
+
+# Dataproc autoscaling workflow 
+    => 특정 알고리즘으로 autoscaling 작동 
+    => submit job 하기 전에 autoscaling 알고리즘이 돌아간다 
+
+    # autoscaling improvement??
+    
+    => reduce time 
+    => easier to understand 
+    => job stability 
+
+# Optimizing Dataproc monitoring
+
+    # use Cloud operation logging and 
+    performance monitoring`
+
+    # create label on cluster , jobs 
+    => to find logs faster
+
+    # set the log level 
+    gcloud dataproc jobs submit hadoop --driver-log-levels
+
+    # from spark 
+    spark.sparkContext.setLogLevel("DEBUG")

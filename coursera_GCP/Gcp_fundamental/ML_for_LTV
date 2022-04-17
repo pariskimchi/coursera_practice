@@ -1,0 +1,34 @@
+데이터 분석 용어 
+
+1. APRU(Average Reveue Per User)
+
+수익을 전체 이용자 또는 가입자로 나눈 단위당 매출.
+    => 1명의 사용자가 지불한 평균 금액. 
+        => 생산성 지표 
+
+    ARPU = 일매출 / DAU (Daily Active User)
+
+2. ARPPU(Average Revenue Per Paid User)
+
+결제를 한 이용자 또는 가입자로 나눈 단위당 매출
+ARPPU = 일매출 / PU (Paid User)
+
+ex) DAU:10명, PU(결제 유저):5명, 
+    일매출이 1,000,000원이라면 ARPPU => 200,000
+
+
+3. LTV(Life Time Value)
+
+사용자 1명당 서비스에서 이탈하기 전까지 
+지불하는 금액 또는 앱 사용하는 기간 동안 발생할 수 있는 
+'사용자당 기대 수익'
+고객 획득 비용 (Acquisition Cost) 는 생애가치(Life Time Value)보다 적어야 한다 
+
+LTV = ARPU * (1/ churn)
+Chrun(유저 이탈 비율) = 1- Retention Rate
+
+예) 한달 유저 당 평균수익(ARPU) 이 100,000 원이고 유저 이탈 비율이 
+20%면 
+LTV => 500,000
+
+

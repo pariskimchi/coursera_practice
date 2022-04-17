@@ -1,0 +1,30 @@
+
+
+Intro 
+    1. fast sql query engine 
+    2. managed storage for dataset 
+
+
+
+gs://<my-bucket-name>/ratings.csv
+
+
+Demo: 
+Exploring bike share data with SQL
+
+
+
+
+`<project_name>.<database_name>.<table_name>`
+
+
+#스케줄링 
+#with @run_time
+
+ML on Sturctered data
+
+    1. choosing right ML model type
+
+    2. predict customer lifetime value (LTV)
+    
+

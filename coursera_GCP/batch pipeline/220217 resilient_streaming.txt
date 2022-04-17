@@ -1,0 +1,112 @@
+
+# Building Resilient Streaming Analysis 
+
+# Intro 
+
+
+# 1. Processing Streaming Data
+
+    pub/sub -> Dataflow => bigquery storage 
+                        => cloud bigtable
+    
+
+    1. Pub/Sub 
+        => changing and variable volume of data 
+    
+    2. Dataflow 
+        => process data without undue delay 
+    3. BigQuery 
+        => need ad-hoc analysis 
+
+# Pub/Sub??
+    - scalability 
+    publisher / subscriber 
+    - low latency  
+    push(batch)    
+    pull(streaming)
+
+    => pub/sub 하나 만들어 놓으면 
+    publisher 가 바뀔떄마다 
+    사용 가능 중간의 Topic 이 핵심 
+
+# Pub/sub : Push vs Pull
+
+    => pub/sub 은 둘다 가능하게 한다 
+
+    # 1. Pull 
+        => separate 
+        => msg stored 7 days 
+
+# Publishing with Pub/Sub code 
+    1. Create topic 
+        =>
+        gcloud pubsub topics create sandiego
+    
+    2. publish to topic 
+        =>
+        gcloud pubsub topcis publish sandiego --mesage "hello"
+
+    3. create a client
+        =>
+        import os 
+        from google.cloud import pubsub_v1
+
+        publisher = pubsub_v1.PublisherClient()
+
+        topic_name = 'projects/{projec_id}/topics/{topic}'.format(
+            project_id = os.getenv('GOOGLE_CLOUD_PROJECT'),
+            topic='MY_TOPIC_NAME',
+        )
+        publisher.create_topic(topic_name)
+        publisher.publish(topic_name, b'Myfirst message!',author='dylan')
+
+# subscribing with pub/sub using async pull 
+
+    1. create client 
+    import os 
+    from google.cloud import pubsub_v1
+
+    subscriber = pubsub_v1.SubscriberClient()
+    topic_name = 'projects/{project_id}/topics/{topic}'.format(
+        project_id = os.getenv('GOOGLE_CLOUD_PROJECT'),
+        topic='MY_TOPIC_NAME'
+    )
+    subscription_name = 'projects/{project_id}/subscriptions/{sub}'.format(
+        project_id = os.getenv('GOOGLE_CLOUD_PROJECT'),
+        sub = 'MY_SUBSCRIPTION_NAME',
+    )
+    subscriber.create_subscription(
+        name=subscription_name, topic=topic_name
+    )
+    def callback(message):
+        print(message.data) => callback when messsage received 
+        message.ack()
+
+    future = subscriber.subscribe(subscription_name, callback)
+
+# subscribing with pub/sub using pull
+
+    1. create subscription 
+    
+    gcloud pubsub subscriptions create --topic sandiego mySub1
+
+    2. Pull subscription 
+
+    gcloud pubsub subscriptions pull --auto-ack mySub1
+
+# changing the batch settings in Pub/Sub 
+
+    from google.cloud import pubsub 
+    from google.cloud.pubsub import types 
+
+    client = pubsub.PublisherClient(
+        batch_settings = BatchSettings(max_messages=500),
+    )
+
+    => latency를 주의해야 된다 
+
+# use pub/sub for streaming resilience 
+
+    버퍼관리가 잘됨 
+    => receiving => holding 
+    

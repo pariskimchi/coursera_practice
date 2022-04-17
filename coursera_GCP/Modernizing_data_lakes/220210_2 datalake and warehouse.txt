@@ -1,0 +1,117 @@
+
+
+bigquery 
+    => used for data warehouse 
+        => to analytics
+    
+    = used for 
+            => Daata warehouse, 
+            data mart, 
+            data lake, 
+            table and view 
+            IAM grant
+
+
+# Data lakes and data warehouses 
+
+
+
+# data warehouses 
+    => data warehouse stores transformed data 
+    in usable condition for business insight 
+    => 데이터 웨어하우스는 잘 정리된 데이터를 
+    파악하기 좋게 놓는곳 
+    => 데이터 레이크는 그냥 한곳에 모아두는 곳 
+
+    #step 
+    raw data => data lake => data warehouse
+
+    # consideration when choosing a datawarehouse 
+
+    => 데이터웨어하우스 선택할때 
+        => batch or streaming pipeline 이냐 
+        실시간이냐 , 아니면 배치 파이프라인이냐 
+        => 하나의 데이터 웨어하우스 클러스터 당 
+        할당되는 쿼리 리밋을 설정
+
+    # bigquery => automate data delivery 
+    
+        cloud SQL => cloud storage 
+    
+
+# RDBMS are optimized for data 
+
+cloud SQL 
+    - scale to GB and TB 
+    - ideal for back-end database applications 
+    - record-based storage 
+    
+
+BigQuery 
+    - sacle to PB
+    - easily connect to external data sources for ingesion 
+    - column-based storage 
+    ==> data warehouse 
+
+
+====> 용도에 따라 다른걸 쓴다 
+
+# Partner Effectivle with other data teams
+
+    => add new value to the data 
+
+    => 데이터에서 새로운 데이타를 추출해낼때 
+    => 새로운 데이터 warehouse 랑 
+        => 이를 연결할 새로운 파이프라인 필요
+    => 딜레이가 있으면 안된다 
+        => ml 모델 예측 결과가 늦게 나오면 안되니까 
+        빠르게 결과 출력을 위해 잘 해야한다 
+
+# Big query BI engine 
+
+    => fast in memory analysis  service 
+    => 분석을 빠르게 하기 위한 엔진
+    => Big query storage에 깔린다
+    => BI 팀은 이 BI engine 에 의존하는데   
+    
+    ===> 이 BI 엔진에 연결된 
+        data warehouse 랑 pipeline의 퍼포먼스가 중요
+
+    => 퍼포먼스 확인은 
+        => Metrics Explorer를 통해서 할수 있다 
+        => Cloud audit Logs 
+            => 현재 작동하는 jobs 들 확인가능
+
+# Manage data access and governance 
+
+    # privacy and security 
+    ==> 권한과 보안 설정 해야 된다 
+
+        => 여기서 cloud data catalog 이용 
+    
+    # Data catalog 
+    => 전체 데이터셋 확인 
+
+    # Data Loss Prevention API
+    => 민감한 데이터 관리 
+
+
+#  Build production-ready pipelines 
+    
+    => pipeline 연결 잘되고 잘 작동하도록 
+    => 딜레이 타임은 줄이고 
+    처음 작동할때 시간은 늘리는 방법은?
+    => 새로운 스키마와 새로운 서비스를 위한 작업을 
+    동작 시킬때 어떻게 반응해야 하는가?
+    => 여기서 AIRflow를 이용한다 
+
+    => Airflow => Cloud Composer (orchestration)
+    
+    #예시 
+    => 만약 새로운 csv파일 누락될때 
+        이를 찾아내서 누락파일을 캐치해서 
+        데이터 웨어하우스에 놓는 작업 실행하게 한다 
+    => 
+
+
+# Google Cloud customer case 

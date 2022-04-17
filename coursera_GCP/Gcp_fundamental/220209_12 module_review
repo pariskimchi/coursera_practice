@@ -1,0 +1,54 @@
+
+1 . 
+    1.if/then statement, data(x)
+
+
+2.  Cloud SQL is a big data analytics warehouse
+    => False 
+
+3. If you are migrating your Hadoop workload to the cloud,
+ you must first rewrite all your Spark jobs to be compliant with the cloud.
+ 
+    => False
+
+4. migrating hadoop workload to cloud 
+
+    1. use PVMs (?)
+    2. migrate your storage from on-cluster HDFS
+        to off-cluster GCS(o)
+    3. consider having muliple Cloud dataproc instance 
+        and turning the donw when not in use 
+        => (o)
+
+
+5. google cloud storage is good option for storing data
+
+    1. May be required to be read a t some later time 
+    (o)
+    2. 
+    will be accessed frequently and update constantly with 
+    new transaction from a 
+    => (x)
+    3. may be imported from bucket into hadoop cluster for analysis
+        => (o)
+    4. is ingested in real-time from sensors and de
+        => (x)
+
+6. Relational database are good choicce      
+    when you need:
+    1. aggregations(x)
+    2. fastqueryies => (x)
+    3. transaction
+    4. streaming
+
+7. Cloud SQL and Cloud dataproc offer familiar tools 
+    what is the value-add provided by GCP?
+    
+    1. Running it on google infra offer reliability and cost saving 
+        => (o)
+    2. Google -proprietary extensions and bug fixes 
+        => (?)
+    3. its same API 
+        => (x)
+    4. Fully managed version of the soft offer
+        =>(o)

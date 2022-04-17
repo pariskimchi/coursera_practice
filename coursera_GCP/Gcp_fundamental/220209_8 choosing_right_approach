@@ -1,0 +1,23 @@
+
+
+
+# Compute 
+
+    1. compute engine 
+    2. google kubernetes Engine (GKE)
+        => 종합 컨테이너 관리 
+    3. App engine 
+
+    4. Cloud function 
+
+# Storage 
+    
+    => 각각 데이터 종류와 
+    사용 용도에 따라 다르게 쓰인다 
+    
+
+    1. cloud bigtable 
+    2. cloud storage 
+    3. cloud sql 
+    4. cloud spanner 
+    5. cloud datastore

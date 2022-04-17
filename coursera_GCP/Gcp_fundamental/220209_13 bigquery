@@ -1,0 +1,32 @@
+
+
+BigQuery 
+
+    1. serverless 
+    2. flexible pricing model 
+    3. data encrpytion and security 
+    4. geospatial data types & functions 
+    5. foundation for BI and AI 
+
+
+    Cloud pub/sub 
+        => stream 에 용이??
+
+    Cloud Dataflow 
+        => Parallel Data processing
+
+    BigQuery 
+        => analytic engine
+
+
+=> 쿼리읽는 속도가 굉장히 빠르다 
+
+
+# Bigquery 2 service 
+    
+    1. fast SQl query Engine 
+    2. Managed storage for datasets
+        => petabit network 
+
+    storage ==============> query service 
+    

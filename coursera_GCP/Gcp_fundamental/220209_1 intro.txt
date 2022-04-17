@@ -1,0 +1,21 @@
+
+
+Google Cloud Platform infrastructure
+
+    -Compute 
+    - Storage 
+    - Networking 
+    - Security 
+
+Big data and ML product 
+
+    - google innovation timeline 
+    - choosing the right approach 
+
+What you can do with GCP 
+
+Activity: Explore a customer use case 
+
+The different data rols in an organization
+
+

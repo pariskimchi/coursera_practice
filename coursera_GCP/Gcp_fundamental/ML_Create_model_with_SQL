@@ -1,0 +1,28 @@
+
+
+step 1. CREATE model
+
+SQL 쿼리문으로 데이타 모델셋 만들기 
+
+CREATE MODEL numbikes.model 
+OPTIONS
+    (model_type='linear_reg',
+        labels=[`num_trips`]) AS
+    WITH bike_data AS
+    (
+        SELECT COUNT(*) as num_trips,
+
+    )
+
+Step 2.  Prediction
+
+SELECT 
+    predicted_num_trips, num_trips, trip_date
+FROM
+    ml.PREDICT(MODEL 'numbikes.model',
+        (WITH bike_data AS
+        ( SELECT COUNT(*) as num_trips)
+        )
+    )
+
+    

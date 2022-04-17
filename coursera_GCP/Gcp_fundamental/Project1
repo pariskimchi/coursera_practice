@@ -1,0 +1,232 @@
+
+Recommendation of Products 
+    Using Cloud SQL and Spark 
+
+
+Overview 
+
+- you populate rentals data in Cloud SQL 
+    for the rentals recommendation engine to use. 
+    The recommendations engine itself run 
+    on Dataproc using Spark ML 
+
+
+Objectives 
+
+
+- Create a Cloud SQL instance 
+- create database tables by importing .sql files
+    from Cloud Storage 
+- Populate the tables by importing .csv files  
+    from Cloud Storage 
+
+- Allow access to Cloud SQL 
+- Explore the rentals data using SQL 
+    statements form CLoud Shell
+
+
+Task 1. 
+Create a Cloud SQL instance 
+
+
+클라우스 SQL 인스턴스 생성 
+    1. menu => SQL 
+    2. Create instance 
+    3. choose MySql
+    4. Instance ID: 
+        => rentals 
+    5. Root password : 
+        => 
+    6. Region : 
+        => us-central1
+    7. click create-instance 
+
+
+Task 2. 
+Create tables 
+
+인스턴스 만들고 난 후에, 
+쿼리문으로 테이블 생성 
+
+    1. recommendation_spark 
+        스키마 생성 
+    CREATE DATABASE IF NOT EXISTS
+    recommendation_spark;
+    
+    2. 데이터 테이블 생성 
+    
+    3. IN CLoud Sql, click rentlas 
+    to view instance info 
+
+    Connect to the database 
+
+
+    1. Connect to this instance box 
+        and open cloud shell 
+        (인스턴스에 연결하고 클라우드 쉘 열기 )
+    2. 클라우드 쉘 열리면 
+        gcloud sql connect rentals 
+        --user root --quiet 
+        
+        이 명령어 있으므로 엔터 클릭 
+    
+    3. 기다리면 ip 주소 나오고 
+        비번 입력 
+    
+    4. 그럼 연결 된거므로 
+
+        SHOW DATABASE ; 
+        
+        명령어로 되나 안되나 확인해보자 
+
+    5. 되면 여기서 이제 
+    recommendation_spark 스키마 및 테이블 생성 
+    SQL 쿼리문을 복붙한다 
+
+    6 .recommendation_spark db 생성됐는지 확인
+
+    USE recommendation_spark;
+    SHOW TABLEs;
+
+    7. recommendation_spark 스키마 내에서 
+    
+        Accommodation table 조회
+
+
+TASK 3. Stage data in cloud Storage 
+ 
+Option1: USe the command line 
+    1. 클라우드 쉘에서 
+    2. 버킷생성문 실행 
+
+Option2: 
+    혹은 클라우드 콘솔로 
+    1.Cloud Storage> Browser
+    2.Create Bucket 
+
+
+TASK 4: 
+LOad data from Cloud Storage into CLoud SQL tables 
+
+1. Navigate back to SQL 
+2. click on rentals table 
+
+
+    Import accommodtaion data 
+    1. click import 
+    2. browse> your-bucket-name>accommodation.csv 
+    3. format of import: csv
+    4. database: 
+        select recommendation_spark 
+    5. table: Accommodation
+3. click import 
+
+    Import user rating data 
+
+TASK 5:
+Explore Cloud SQL data 
+
+1. 인스턴스에 연결 
+2. 클라우드 쉘 열기 
+3. 로그인
+4. 비번 입력 
+5. 쿼리문 입력으로 SQL 데이터 확인해보기 
+6. USE recommendation_spark; 
+    SELECT * FROM Rating 
+    LIMIT 15;
+
+
+TASK 6: Launch Dataproc 
+
+데이터프록은 
+머신러닝 모델을 훈련시키기 위해서 사용한다. 
+훈련데이터는 있는 데이터를 가져다가 훈련시킨다 
+ 
+이 데이터프록을 머신러닝 훈련을 위해서 작동 시키려면 
+
+1. 클라우드 콘솔에서, 
+    Menu> SQL 
+2. Menu > Dataproc> ENable API
+3. CReate cluster > 
+    name cluster: rentals 
+4. region check 
+5. Click configure nodes 
+6. For master node, 
+    machine Type:
+        => n1-standard-2
+    For worker node, 
+    machine Type:
+        => n1-standard-2
+
+7. Create 
+8. check Name, Zone, Total worker node 
+
+
+10. 클라욷 쉘에서 
+    배쉬문 복붙인데 
+    배쉬문을 이해해야 한다 
+    
+    이 배쉬문이 
+    rentals 클러스터에서 
+    rentals SQL 클라우드 
+    zone 설정, node worker 설정 
+    
+    ip 주소 설정 
+
+    일단 복붙 하고 
+    실행 
+
+11. Patching CLoud SQL instance.. done 
+    결과 메세지 받으면 확인 
+
+12. 인스턴스에 연결 
+    내 아이피 주소 확인하고, 복붙
+
+
+TASK 7. run the ML model 
+
+여기서 이미 훈련된 모델을 
+일단 머신러닝 모델을 실행해서 
+결과값을 받기 위해서 돌린다 
+
+1. 일단 ML model 실행을 위한 명령어 실행 
+
+2. 훈련 모델 파일 내에서 
+    아이피 주소 설정
+    cloudSql_pwd 설정 
+    그리고 저장 
+    
+ 
+ TAsk 8: Run your ML job on Dataproc 
+ 
+ 1. 데이터프록 콘솔에서 
+     rentals 클러스터 클릭 
+2. submit job 
+3. job type:
+    => PySpark 
+    
+    Main python file:
+    gs://<bucket_name>/train_and_apply.py
+    
+    Max restart per hour: 
+        => 1
+4. click submit 
+5.   Menu> Dataproc > Job
+
+
+Task 9. Explore inserted rows with SQL 
+
+1. SQL 열고 
+2. rentals 클릭 
+3. 인스턴스에 연결해서 클라우드 쉘 명령어 실행 
+4. 쿼리문으로 확인해본다 머신러닝 결과값 
+    추천값 받았는지 
+
+
+
+
+
+qwiklabs-gcp-02-5cb73823614b
+
+
+35.224.105.241

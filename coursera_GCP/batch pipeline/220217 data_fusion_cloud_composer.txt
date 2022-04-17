@@ -1,0 +1,68 @@
+
+
+# Cloud data fusion?
+
+    => data integration service 
+    for managing data pipeline 
+
+
+# Components of cloud data fusion 
+    - control center 
+        - application 
+        - artifact 
+        - dataset 
+
+
+# build a pipeline 
+    => DAG (directed Acyclic Graph)
+
+# Data Analyst can explore datasets in the Wrangler 
+
+
+# Lab 
+
+    1. Task 1 
+        => creating a cloud data fusion instance 
+
+    2. Task 2. 
+        => load data 
+
+    3. Task 3 
+        => Cleaning the data 
+    
+    4. Task 4 
+        => Creating the pipeline
+    5. Task 5 
+        => Adding a data source
+    6. Task 6 
+        => Joining two sources 
+    7. Task 7 
+        => Storing the output to BigQuery 
+    8. Task 8 
+        => deploying and running the pipeline 
+    9. Task 9 
+        => Viewing the results
+
+
+# orchestrating work 
+between GCS with Cloud Composer
+
+# Apache airflow environment??
+
+# Dags and Operator?
+
+# Two scheduling options 
+    for cloud composer workflow 
+        1. Periodic 
+
+        2. Event-driven 
+# 2 types of workflow ETL patterns 
+
+    1. Push (event-triggered)
+    => 새로운 파일이 GCS에 들어오면 동작 
+    2. Pull(scheuled)
+    => 특정 시간 되면 GCS 폴더에서 동작
+
+
+# Cloud composer    
+    => airflow and dag

@@ -1,0 +1,125 @@
+
+
+1 . building batch data pipeline 
+2. Executing spark on dataproc 
+
+
+
+# building batch data pipelines?
+
+
+    # What is the batch data pipeline?
+
+        => 일정시간에 데이터 파이프라인으로 하는거 
+
+
+# EL, ELT, ETL?
+
+    
+    # EL 
+        1. Extract data from cloud storage 
+        2. load it to Bigquery's storage 
+        
+        # when?
+            => batch load of historical data 
+            => scheduled periodic loads of 
+            log file 
+            => only when data is already clean 
+            and correct
+
+
+    # ELT
+
+        1. Extract data from cloud storage 
+        2. Transform data using bigquery 
+            store into new tables 
+        
+        # when?
+            => not sure what transformation 
+            needed to make the data usable 
+            => produce private dataset 
+    
+    # ETL
+        1. extract data from cloud into bigquery 
+        2. transform 
+        3. load 
+
+        # when?
+            => not sure what transformation 
+
+# Data quality??
+
+    1. valid 
+    2. accurate 
+    3. complete 
+    4. consistent 
+    5. uniform 
+
+
+    # filter to identify and isolate invalid data 
+        => 데이터 퀄리티 확인 
+        1. checking null value (SQL)
+        2. checking blank (SQL)
+             NULLIF(), IFNULL(), COALESCE()
+
+        3. checking duplicate
+        -> 중복 데이터 확인
+            => count(distinct field)
+            => count (field)
+            => count(field) group by (field)
+
+        4. checking data types 
+            => 데이터 타입 확인 
+            => FORMAT(), CAST()
+
+
+# build ETL pipelines in Dataflow 
+and the data into bigQuery 
+
+    1. extract data from Pub/Sub, cloud storage,
+    cloud SQl 
+    2. transform the data using dataflow 
+    3. Dataflow pipeline write to bigquery 
+
+    # when?
+    raw data 
+    => when you want to integrate with CI/CD
+    continuous integration/ continuous delivery systems 
+
+
+# how ETL to solve data quality problems?
+
+
+    # case 
+    1. Latency => dataflow to bigtable 
+
+    2. Reusing spark pipelines => dataproc 
+
+    3 . Need for visual pipeline budiling
+    => Cloud data fusion    
+
+
+# Dataproc?
+    => batch / streaming pipeline  querying
+        + ML 
+
+# Datafusion?
+    => pipelines => integration
+
+# data lineage?
+    => metadata about the data
+    => what data is fitted?
+
+# label?
+
+    => label :{key:value}
+
+# data catalog 
+    => metadata manage
+    => data discovery
+
+    => simplify data discovery 
+    => unified view of all datasets 
+    => data governance foundation
+
+

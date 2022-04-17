@@ -1,0 +1,43 @@
+
+
+
+why storage??
+
+빅데이터의 용량이 너무 크기 때문에, 
+머신러닝이나 분석을 위해서 데이터를 쓰려면 
+기존 데이터 관리에 영향을 최소한으로 주기 위해서 
+활용하기 위한 데이터를 storage 에 넣어서 관리한다 
+
+
+1. Creating a cloud storage bucket for your data 
+
+    # CLI 
+    gsutil mb -p [PROJECT_NAME] 
+    -c [STORAGE_CLASS]
+    -l [BUCKET_LOCATION]
+    gs://[BUCKET_NAME]/
+
+2. Resources 
+
+    => 구글클라우드에서 리소스는 
+
+    1. BigQuery dataset 
+        => 샘플 참조용으로 쓰는 데이터셋
+    2. Cloud Storage bucket 
+        => 활용하기 위해서 쓰는 버킷
+    3. Compute Engine instance 
+        => 활용하기 위해서 전체적인 가상환경 만든다
+    4. Big Query Dataset 2
+        => 이제 모델을 통해서 만들어진 데이터셋
+
+=> 이모든것을 관리하는것 
+    Organization 이다 
+
+3. Organization => Cloud identity Access Management (IAM)
+    => apply policies 
+
+
+4. Using gsutil to copy existing data into cloud storage 
+
+    #CLI
+    gsutil cp sales*.csv gs://[BUCKET_NAME]

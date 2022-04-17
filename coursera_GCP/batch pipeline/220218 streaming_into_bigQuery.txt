@@ -1,0 +1,170 @@
+
+
+# 
+
+bigquery 
+    => stream record into bigTable 
+
+    => streaming vs batch
+        => availability 에 달려있다 
+    
+
+# Insert streaming data into BigQuery table 
+
+    #credentials 
+    export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/[FILE_NAME].json"
+    
+    # install 
+    pip install google-cloud-bigquery 
+
+    # python code 
+
+        # create client 
+        from google.cloud import bigquery 
+        client = bigquery.Client(project="PROJECT_ID")
+
+        # Access dataset and table 
+        dataset_ref = bigquery_client.dataset('my_dataset_id')
+        table_ref = dataset_ref.table('my_table_id')
+        table= bigquery_client.get_table(table_ref) # get table access from API
+
+        # read data from Pub/sub and place into row format 
+        # example 
+        rows_to_insert = [
+            (u'customer 1',5),
+            (u'customer 2',17),
+        ]
+        # perform insert rows into table
+        errors = bigquery_client.insert_rows(table,rows_to_insert)
+
+    # visualization with DATA STUDIO
+
+# streaming with Cloud bigtable
+
+    # cloud bigtable 
+        => using NoSQL queries 
+    
+    # bigquery vs bigtable 
+        1. bigquery 
+            => serverless service for SQL 
+            seconds
+        2. bigtable 
+            => cluster-based for NoSQL
+            => miliseconds => fast
+    ===> 속도에 따라 다르므로 용도에 맞게 다르게 사용 
+
+    # what is the best row key??
+
+# Optimizing Cloud bigtable Performance 
+
+    1. Tune the resources 
+        1. 클라이언트랑 빅테이블이 같은존에 있는지 확인 
+        2. 디스크 스피드 확인 
+        3. 노드 수 증가에 따른 속도 증가 
+    2. Cloud bigtable learning behavior 
+        1.=> 노드 스케일업 하고 퍼포먼스 좋아졌는지 확인 
+        2.=> 300기가 위로 빅테이블 확인 
+    3. Tune the schema 
+        => change schema to minimize data skew 
+
+# use bigtable replication to improve availability 
+    => why replication?
+        1. 배치 읽기에서 고립시켜서 
+            availability 증가 
+        2. 실시간으로 백업한다 
+        3. 복사함으로써 실시간 존재 확인도 함 
+
+    # syntax 
+    gcloud bigtable clusters create CLUSTER_ID \
+        --instance=INSTANCE_ID \
+        --zone=ZONE \
+        [--num-nodes=NUM_NODES]
+        [--storage-type=STORAGE_TYPE]
+
+
+# Lab : Streaming data processing 
+    : streaming data pipeline into bigtable 
+
+    1. 파일 다운로드 
+    2. 가상환경에서 sh 파일 돌리기 
+    3. 트래픽 센서 데이터 pub/sub에서 시뮬레이션 돌리기 
+        => sh 파일 돌리기 
+    4. dataflow 파이프라인 돌리기 
+        => dataflow 파이프라인 돌리는 sh파일 돌리기 
+        => bigtable 생성 sh파일 돌리기 
+        => 
+    5. bigtable 데이터 쿼리로 만들기 
+        => sh 파일을 통해 쿼리문 생성 돌리기 
+    6. cleanup 
+
+# Analytic Window functions for advanced analysis 
+
+    1. standard aggregations 
+    2. Navigation functions 
+    3. Ranking and Numbering functions 
+
+    # example: count function 
+
+# GIS functions?
+
+# Performance consideration 
+
+    => How to optimize in production?
+     
+        1. use Dataflow 
+            => to do processing and data-transformation 
+        2. create multiple tables 
+            => for easy analysis 
+        3. use BigQuery 
+            => for streaming analysis and dashboard 
+            => store data in BigQuery 
+        4. create a view for query 
+    
+    # How to improve efficency?
+
+        1. Input/Output 
+            => 얼마나 많은 용량이 read?
+        2. shuffling 
+            => 얼마나 많은 데이터가 다음 스텝으로 넘어갔는가?
+        3. grouping 
+            => 얼마나 많은 데이터가 각각 그룹에서 넘어갔는가?
+        4. Materialization 
+            => 얼마나 많은 용량이 written 됐는지?
+        5. functions and UDF 
+            => 얼마나 많은 CPU가 function 에 사용됐는지?
+
+    # Optimize BigQuery queries
+        => 효율성과 빠른 속도를 위해서 
+            최소한의 필요 데이터만 불러온다 
+        
+    # Set up clustering at table creation time 
+
+        # Syntax:
+        CREATE TABLE mydataset.myclusteredtable(
+
+        )
+        PARTITION BY DATE(eventDate)
+        CLUSTER BY userId 
+        OPTIONS (
+            partition_expiration_days=3,
+            description="cluster"
+        )
+    
+    # Using BigQuery plan to optimize 
+
+        1. avg and max time difference?
+        
+        2. MOst time spent reading ?
+            => early filtering 
+        3. Most time spent on CPU task?
+            => early filtering 
+            => care UDF 
+
+# Lab: Optimizing BigQuery queries 
+
+    # objectives 
+    1. Minimizing Input/Output
+    2. Caching result of previous query 
+    3. Performing efficient join 
+    4. Avoid over-whelming single worker 
+    5. Using approximate aggregation function

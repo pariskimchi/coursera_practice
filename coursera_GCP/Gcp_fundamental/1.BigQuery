@@ -1,0 +1,68 @@
+
+Objectives 
+1. Query a public dataset 
+2. create a custom table 
+3. load data into a table 
+4. Query a table 
+
+
+
+환경 셋업 
+
+1. start Lab 누르고 실행 하면 
+2. 구글 플랫폼 콘솔 유저네임, 비번 GCP 프로젝트 아이디가 생성됨
+
+5. 다른 아이디로 사용하기 를 누르고 
+    => 생성된걸로 복붙 
+
+
+빅쿼리 콘솔 열기 
+Menu => BIg data = > BigQuery
+
+
+
+
+Task1 . QUERY a public dataset 
+
+1. load the USA NAMES dataset 
+    => Add data => Explore public dataset 
+
+2. IN the searchbox, type USA names and 
+3. click on the USA names til you see in the search results.
+4. click view dataset
+
+=> 이렇게 하면 프로젝트 데이타가 리로스에 저장된다 
+
+
+- Query the USA Names dataset 
+QUEry ' bigquery-public-data.usa_names.usa_1910_2013'
+
+1. 쿼리문 복붙하기 
+2. 오른쪽 상단에서 확인 
+3. 런 클릭 
+4. 쿼리문 결과 확인 
+
+TASK2. create a custom table 
+1. Baby names zip file 다운 
+2. 로컬에서 압축 풀고 
+3. NationalReadMe.pdf  
+4. yob2014.txt, 
+5. yob2014.txt  path 설정 
+
+TASK3. CReate a dataset 
+
+Explorer 섹션에서 
+프로젝트 아이디 클릭 
+
+=> Create dataset 클릭 
+3. on the create dataset page:
+
+- For Dataset ID => enter babynames 
+- for Data location, choose USA
+- for default table expiration, leave the default 
+- for encryption, leave the default value
+
+
+TASK 4. load the data into a new table 
+
+1. babynames from the explorer section 

@@ -1,0 +1,188 @@
+
+# Intro 
+
+    1. Dataflow?
+    2. Why customer value Dataflow 
+    3. Dataflow Pipeline 
+    4. Aggregate with GroupByKey and Combine 
+    5. Side inputs and windows 
+    6. dataflow Templates 
+    7. Dataflow SQL
+
+
+# 1. Dataflow?
+
+    1. Dataflow 
+        => data processin pipeline 
+         batch + streaming
+        => fully managed 
+        => auto scaling - transform-transform
+        => apache beam 
+    
+    2. dataproc 
+        => hadoop/spark application 
+            - ML/ecosystem 
+            + large-batch jobs 
+    
+    # Dataflow vs Dataproc?
+
+        #1. dataflow 
+            => scalability 
+            => low latency
+
+        # Apache beam 
+            => batch + stream 
+
+
+# 2. why customers value dataflow?
+
+    dataflow 
+        => choose how to run pipeline
+
+    # advantage 
+        - once aggregation 
+        - rich time tracking 
+        - good integration with GCP
+
+    # syntax:
+
+    import apache_beam as beam 
+    
+    if __name__ == '__main__':
+        
+        with beam.Pipeline(argv=sys.argv) as p:
+
+            (p
+                | beam.io.ReaFromText('gs://..')
+                | beam.FlatMap(count_words)
+                | beam.io.WriteToText('gs:////')
+            )
+    options = {'project':<project>,
+    'runnder':'DataflowRunnder','region':<region>,
+    'setup_file':<setup.py file>}
+    pipeline_options = beam.pipeline.PipelineOptions(
+        flags=[], **options
+    )
+    pipeline = beam.Pipeline(options=pipeline_options)
+
+    # run on cloud 
+    python ./grep.py \
+        --project=$PROJECT  \
+        --job_name = myjob  \
+        --staging_location = gs://$BUCKET/staging / \
+        --temp_location = gs://$BUCKET/tmp/ \
+        --runner=DataflowRunner
+
+    # key considerations with designing pipelines 
+
+        # read data from local 
+        
+        with beam.Pipeline(options=pipeline_options) as p:
+
+        # read from Cloud storage 
+        lines = p | beam.io.ReadFromText("gs://../input-*.csv.gz")
+
+        # read from Pub/Sub
+        lines = p | beam.io.ReadStringsFromPubSub(
+            topic=known_args.input_topic
+        )
+        # read from bigQuery 
+        query = "SELECT ""
+        BQ_source = beam.io.BigQuerySource(
+            query = <query>, use_standard_sql=True
+        )
+        BQ_data = pipeline | beam.io.Read(BQ_source)
+
+        # establish reference to BigQuery table 
+
+        from apache_beam.io.gcp.internal.clients import bigquery 
+
+        table_spec = bigquery.TableReference(
+            projectId = 'clouddataflow-readonly',
+            datasetId = 'samples',
+            tableId = 'weather_stations'
+        )
+        
+        # write to Bigquery table 
+        p | beam.io.WriteToBigQuery(
+            table_spec, 
+            schema =table_schema, 
+            write
+        )
+
+        # Create a Pcollection from memory data 
+
+        city_zip_list = []
+
+        citycodes = p | 'CreateCityCodes' >> beam.Create(city_zip_list)
+
+
+# Map and FlatMap 
+
+    # use Map 1:1 
+    'WordLengths' >> beam.Map(word, len(word))
+
+    # Use FlatMap for non 1:1
+     with generator 
+     def my_grep(line,term):
+        if term in line:
+            yield line   => generator 
+    
+    'Grep' >> beam.FlatMap(my_grep(line, searchTerm))
+
+    # ParDo 
+    word_length = words | beam.ParDo(computeWordLength)
+
+
+# how side inputs work 
+
+    words = _
+
+    def filter_using_length(word, lower_bound, upper_bound=float('inf')):
+        if lower_bound <= len(word) <= upper_bound:
+            yield word 
+    
+    small_words = words | 'small' >> beam.FlatMap(filter_using_length,0,3)
+
+    avg_word_len = (words | beam.Map(len)
+                | beam.CombineGlobally(beam.combiners.MeanCombineFn()))
+
+    larger_than_average = (words | 'large' >> beam.FlatMap(
+        filter_using_length, lower_bound = pvalue.AsSingleton(avg_word_len)
+    ))
+
+# Setting a single global window for a Pcollection
+
+from apache_beam import window 
+
+session_windowed_items = (
+    items | 'window' >> beam.WindowInto(window.GlobalWindows())
+)
+
+# using windowing with batch (group by time)
+
+    lines = p | 'Create' >> beam.io.ReadFromText('access.log')
+    windowed_counts = (
+        lines 
+        | 'Timestamp' >> beam.Map(beam.window.TimestampedValue(x, extract_timestamp(x)))
+        | 'Window' >> beam.WindowInto(beam.window.SlidingWindows(60,30))
+        | 'Count' >>
+        (beam.CombineGlobally(beam.combiners.CountCombineFn()).without_defaults())
+    )
+    windowed_counts = windowed_counts | beam.ParDo(PrintWindowFn())
+
+
+# creating and re-using pipeline Templates 
+
+    # dataflow templates 
+        => enable the rapid deployment of standard job types 
+
+
+    # executes templates 
+    =>
+        gcloud dataflow jobs run \
+        --gcs-location = gs://df-ts/latest/PubsubToBigQuery \
+        --parameters inputTopic=X outputTable=Y
+
+
+        

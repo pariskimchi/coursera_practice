@@ -1,0 +1,111 @@
+Objectives 
+    1. Setup Streaming Taxi Topic in Pub/sub
+
+    2. Create Dataflow job from template 
+
+    3. Stream and monitor pipeline in BigQuery 
+
+    4. Analyze results and create views 
+
+    5. Visualize key metrics in Data Studio 
+
+    
+
+Task 1. Create a Pub/ Sub topic and BigQuery dataset 
+
+    Publisher / subscriber 
+
+    In Pub / Sub , publisher application s and 
+        subscriber applications connect with one another 
+        through the use of a shared string called a topic. 
+
+        토픽을 통해 퍼블리셔와 서브스크라이버가 교류가능 
+        
+    publichser => create and send a message to a topic 
+
+    subscriber => create subscription to a topic, receive message 
+
+
+    ==> google maintains 
+
+    Option 1. 
+    => create taxirides dataset 
+
+Task 2. Create a Cloud Storage bucket 
+
+    cloud storage 버킷 생성 
+    데이터가 활동할 공간을 위한 저장소 
+
+Task 3. Set up a dataflow pipeline 
+
+    dataflow => serverless way to carry out data analysis 
+    
+    데이터플로우 => 데이터 분석을 위한 방법 
+    
+    여기서 데이터 플로우 파이프라인을 만들어준다 
+    
+    dataflow => 
+    create job from template 
+    => job name: 
+        => streaming-taxi-pipeline
+    Under Dataflow template, 
+        => select the Pub/Sub Topic to BigQuery
+
+    Under Input Pub/Sub topic, 
+        => enter projects/pubsub-public-data/topics/taxirides-realtime
+
+    Under BigQuery output table, 
+        => enter <myprojectid>:taxirides.realtime
+
+    Under Temporary location, 
+        => enter gs://<mybucket>/tmp/
+
+    Click Run job
+
+=> a new streaming job started!!
+
+Task 4. Analyze the taxi data using BigQuery 
+
+    => 3단계에서 데이터플로우 파이프라인 건설 해줫고 
+        행동설정까지 해줫고 
+        pub/sub 토픽 인풋 설정까지 해줫고, 
+        빅쿼리 아웃풋으로 해줫고 
+        위치 설정까지 해줬으니 
+        파이프라인 건설 완성 되었으므로 빅쿼리를 이용하여 분석하자 
+
+    
+    Menu => BigQuery 
+
+    Editor => Run 
+    'select * from taxirids.realtime 
+    LIMIT 10';
+
+Task 5. Perform aggregations on the stream for reporting 
+
+    데이터 병합을 한다, 스트리밍 되어있는 데이타에 관해서 
+
+
+Task 6. create a real-time dashboard 
+
+    1. open google data studio 
+
+    2. on the report page, 
+        in the Start with a Template section, 
+        blank Report template
+    
+
+
+Task 7. Create a time series dashboard
+
+    시계열 분석 대시보드 
+
+    => create a time series chart 
+
+Task 8. Stop the dataflow job 
+
+    => 분석 시각화 작업이 모두 끝났으므로 
+        데이터 플로우 작업을 중단한다 
+
+    1. click Dataflow 
+    2. click Streaming-taxi-pipeline
+    3. Click STOP and Select CAncel => Stop JOb

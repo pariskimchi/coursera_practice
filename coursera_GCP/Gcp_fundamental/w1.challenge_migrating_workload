@@ -1,0 +1,32 @@
+
+
+How to solve recommendation housing price?
+
+
+
+spark, 
+hadoop,
+
+
+
+Lab:Recommending Products Using Cloud SQL + spark 
+
+
+Objectives :
+
+- Create Cloud SQL instance and populate tables 
+- Explore the rentals data using SQL statements from cloud Shell 
+- Launch Dataproc
+- Train and apply ML model written in pyspark 
+    to create product recommendations 
+- Explore inserted rows in Cloud SQL
+
+Step 1:
+    =>Setup rentals data on Cloud SQL 
+
+Step 2:
+    => Recommendations with ML and Dataproc
+        1. read rating 
+        2. train model 
+        3. create recommendation  and save top 5
+        4. show product recommendation 

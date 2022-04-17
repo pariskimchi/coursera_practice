@@ -1,0 +1,37 @@
+
+
+3. Activity: 
+=> Explore real customer
+
+
+Big Data Challenges 
+
+- Migrating existing data workloads 
+(Hadoop, Spark jobs)
+
+- Analyzing large datasets at scale 
+
+- Building streaming data pipelines 
+
+- Applying maching learning to your data
+
+
+Recommendation Systems 
+- Business applications 
+- Scenario: ML for housing rentals 
+
+
+Where have you seen recommendation systmes before?
+=> model recommends products you may like 
+based on your preferences 
+
+=> you can give feedback to better inform the model 
+
+
+Recommendation systems require data, 
+a model, 
+training/serving infrastructure 
+
+
+Challenge: ML for recommending 
+housting rentals 
